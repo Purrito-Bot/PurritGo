@@ -1,1 +1,1 @@
-# PurritGo
+# Purrigo
