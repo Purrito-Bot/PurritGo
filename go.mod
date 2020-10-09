@@ -1,4 +1,4 @@
-module github.com/djaustin/purritgo
+module github.com/djaustin/purrigo
 
 go 1.15
 
