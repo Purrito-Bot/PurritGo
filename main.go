@@ -9,7 +9,25 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	ng "github.com/djaustin/namegenerator"
 )
+
+var drowNames = []string{"Aamaneus", "Acostant", "Adehémar", "Aimeric", "Aimerics", "Aimerigatz", "Aimeriguet", "Aimes", "Alas", "Alazais", "Albarics", "Aldrics", "Alfans", "Alfonzenc", "Alias", "Aliazars", "Allard", "Amaldric", "Amaldrics", "Amalvis", "Amaneus", "Amerig", "Ancelmes", "Ancelmetz", "Anfos", "Araimfres", "Arbert", "Arguis", "Armans", "Arnaud", "Arnaudos", "Arnaut", "Arnautz", "Arsius", "Audegers", "Austor", "Azalbertz", "Azemar", "Baset", "Baudois", "Bausas", "Beranger", "Berengiers", "Bernart", "Bernat", "Bernatz", "Bertrans", "Borel", "Bovert", "Burcan", "Cadmar", "Chatbert", "Chinon", "Crespi", "Daire", "Dalmatz", "Danain", "Dragan", "Dragonetz", "Drogos", "Ebratz", "Elad", "Emeric", "Enricx", "Espanel", "Espas", "Estaci", "Esteve", "Estotz", "Exuperi", "Fanjaus", "Feris", "Ferrandos", "Filipot", "Focaut", "Foilan", "Folquets", "Fortaner", "Frezols", "Fricor", "Gaidon", "Gailhard", "Galters", "Garnier", "Gaston", "Gastos", "Gaucelis", "Gaudifer", "Gaudis", "Gautiers", "Gervais", "Gilabert", "Gilabertz", "Girauda", "Giraudetz", "Girauds", "Girautz", "Girvais", "Girvaitz", "Gobert", "Godafres", "Gontrand", "Gualhartz", "Gui", "Guigo", "Guilabert", "Guilabertz", "Guilelmes", "Guilhamos", "Guilhelmes", "Guilhelmet", "Guilhelms", "Guilhem", "Guilheumes", "Guion", "Guios", "Guiotz", "Guiraud", "Guiraudos", "Guiraut", "Guis", "Haylon", "Hugues", "Imbert", "Inard", "Isarn", "Isarts", "Isoartz", "Isodard", "Izarns", "Jacques", "Jaques", "Jaufre", "Jaufres", "Jean", "Joan", "Joans", "Johan", "Johans", "Jordas", "Joris", "Josselin", "Joudain", "Lambert", "Lamberts", "Lanval", "Lozoïc", "Lozoïs", "Lucatz", "Luzia", "Mamert", "MartisAlgais", "Michels", "Milon", "Milos", "Miquel", "Nicolas", "Otes", "Otz", "Patrice", "Peire", "Perrin", "Peyre", "Pons", "Quinault", "Raimon", "Rainaut", "Rainautz", "Rainers", "Rainiers", "Ramon", "Ramons", "Raolf", "Raolfs", "Raüli", "Reiambalts", "Remi", "Ricals", "Ricartz", "Richart", "Riquers", "Riton", "Roberts", "Robertz", "Rogers", "Rogerx", "Rogier", "Rostains", "Rostans", "Rotger", "Rotgiers", "Rotlans", "Sauson", "Savarics", "Segui", "Serin", "Sevin", "Sevis", "Sicard", "Sicart", "Simo", "Simos", "Sornehan", "Tecin", "Tezis", "Thibaud", "Thosa", "Tibal", "Tibaut", "Tibout", "Titbaut", "Uc", "Ucs", "Ug", "Ugos", "Ugs", "Ugues", "Valeray", "Vezias", "Xavier"}
+
+var generator ng.NameGenerator
+
+type parsedCommand struct {
+	session *discordgo.Session
+	message *discordgo.MessageCreate
+	command string
+	args    []string
+}
+
+func init() {
+	// Set up Markov chains for name generation
+	generator = ng.New()
+	generator.SeedData("drow", drowNames)
+}
 
 func main() {
 	token := flag.String("t", "", "Bot Token")
@@ -59,20 +77,39 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Ignore all messages not using the command prefix
-	if !strings.HasPrefix(m.Content, "go") {
+	if !strings.HasPrefix(m.Content, "go ") {
 		return
 	}
 
-	// Strip the prefix from he command
-	command := strings.Split(m.Content, " ")[1]
+	command := parseCommand(s, m)
 
 	// If the message is "ping" reply with "Pong!"
-	if command == "ping" {
+	if command.command == "ping" {
 		s.ChannelMessageSend(m.ChannelID, "Pong!")
 	}
 
 	// If the message is "pong" reply with "Ping!"
-	if command == "pong" {
+	if command.command == "pong" {
 		s.ChannelMessageSend(m.ChannelID, "Ping!")
 	}
+
+	if command.command == "name" {
+		handleName(command)
+	}
+}
+
+func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate) parsedCommand {
+	splitMessage := strings.Split(m.Content, " ")[1:]
+	command := parsedCommand{
+		session: s,
+		message: m,
+		command: splitMessage[0],
+	}
+
+	if len(splitMessage) > 1 {
+		command.args = splitMessage[1:]
+	}
+
+	return command
+
 }
