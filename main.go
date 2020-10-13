@@ -83,18 +83,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	command := parseCommand(s, m)
 
-	// If the message is "ping" reply with "Pong!"
-	if command.command == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
-
-	// If the message is "pong" reply with "Ping!"
-	if command.command == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
-
-	if command.command == "name" {
+	switch command.command {
+	case "name":
 		handleName(command)
+	case "meow":
+		s.ChannelMessageSendTTS(m.ChannelID, "meow")
+	case "mirror":
+		s.ChannelMessageSend(m.ChannelID, m.Author.AvatarURL(""))
+	case "show":
+		urls := []string{}
+		for _, v := range m.Mentions {
+			urls = append(urls, v.AvatarURL(""))
+		}
+		s.ChannelMessageSend(m.ChannelID, strings.Join(urls, "\n"))
 	}
 }
 
