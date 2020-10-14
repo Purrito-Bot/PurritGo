@@ -10,7 +10,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	ng "github.com/djaustin/namegenerator"
+	ng "github.com/djaustin/name-generator"
 	"github.com/purrito-bot/purrigo/voice"
 )
 
