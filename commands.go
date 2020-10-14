@@ -10,7 +10,12 @@ import (
 
 func handleName(c parsedCommand) {
 	if len(c.args) < 1 {
-		c.session.ChannelMessageSend(c.message.ChannelID, "Usage: go name <variant>")
+		c.session.ChannelMessageSend(c.message.ChannelID, "Usage: go name <variant> <count?>")
+		return
+	}
+	if c.args[0] == "variants" {
+		message := fmt.Sprintf("I can generate the following types of name:\n%s", strings.Join(generator.Variants(), "\n"))
+		c.session.ChannelMessageSend(c.message.ChannelID, message)
 		return
 	}
 	count := 1
