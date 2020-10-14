@@ -44,8 +44,11 @@ func main() {
 
 	// Check a token was provided
 	if *token == "" {
-		flag.Usage()
-		return
+		*token = os.Getenv("DISCORD_TOKEN")
+		if *token == "" {
+			flag.Usage()
+			return
+		}
 	}
 
 	// Create a new Discord session using the provided bot token.
