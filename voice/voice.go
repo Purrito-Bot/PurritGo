@@ -30,14 +30,14 @@ func LoadSound(fileName string) ([][]byte, error) {
 		if err == io.EOF || err == io.ErrUnexpectedEOF {
 			err := file.Close()
 			if err != nil {
-				return buffer, err
+				return nil, err
 			}
 			return buffer, nil
 		}
 
 		if err != nil {
 			fmt.Println("Error reading from dca file :", err)
-			return buffer, err
+			return nil, err
 		}
 
 		// Read encoded pcm from dca file.
@@ -47,7 +47,7 @@ func LoadSound(fileName string) ([][]byte, error) {
 		// Should not be any end of file errors
 		if err != nil {
 			fmt.Println("Error reading from dca file :", err)
-			return buffer, err
+			return nil, err
 		}
 
 		// Append encoded pcm data to the buffer.

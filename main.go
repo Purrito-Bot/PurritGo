@@ -52,7 +52,7 @@ func init() {
 
 	meowBuffer, err = voice.LoadSound("meow.dca")
 	if err != nil {
-		log.Panicln("Cannot load sound", err.Error())
+		log.Fatalln("Cannot load sound", err.Error())
 	}
 }
 
